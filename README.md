@@ -101,8 +101,6 @@ npm run check
 PUBLIC_BASE_URL=https://soulfree19.github.io/three-line-table-word npm run release:github
 ```
 
-更多发布说明见：
+更多说明见：
 
 - [Mac 安装与使用](docs/MAC_INSTALL.md)
-- [GitHub DMG 发布](docs/GITHUB_RELEASE.md)
-- [打包说明](docs/PACKAGING.md)
