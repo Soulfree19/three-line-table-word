@@ -1,10 +1,46 @@
 # 一键三线表插件
 
-这是一个优先服务 Word for Mac 的 Office.js 加载项。用户先选中 Word 表格，点击功能区里的“一键三线表”，即可按当前模板把表格改成科研论文常用三线表。
+一键三线表插件是一个面向 Microsoft Word 的表格格式化工具，优先服务 Mac 用户。用户只需要在 Word 文稿中选中表格，或者把光标放进表格里，点击插件按钮，就可以把普通表格转换为科研论文常用的三线表。
 
 当前版本：`1.0.0`
 
-## 已实现功能
+## 下载
+
+推荐 Mac 用户下载 DMG 安装包：
+
+[下载一键三线表插件 v1.0.0 DMG](https://github.com/Soulfree19/three-line-table-word/releases/download/v1.0.0/three-line-table-word-1.0.0-github.dmg)
+
+也可以进入 GitHub 发布页查看所有文件：
+
+[打开 GitHub Releases](https://github.com/Soulfree19/three-line-table-word/releases/latest)
+
+## 适用环境
+
+- macOS
+- Microsoft Word for Mac
+- 建议使用 `.docx` 文档
+- 安装后需要能访问 GitHub Pages，因为插件页面托管在 GitHub Pages 上
+
+## 安装方法
+
+1. 下载 `three-line-table-word-1.0.0-github.dmg`。
+2. 打开 DMG 文件。
+3. 双击 `一键三线表插件安装器.app`。
+4. 安装完成后，完全退出并重新打开 Microsoft Word。
+5. 在 Word 的“开始 > 加载项”中找到“一键三线表插件”。
+
+如果 macOS 提示“无法打开来自未认证开发者的应用”，请右键点击 `一键三线表插件安装器.app`，选择“打开”，再确认打开。
+
+## 使用方法
+
+1. 打开 Word 文稿。
+2. 选中整个表格，或者把光标放在表格内部。
+3. 点击 Word“开始”选项卡里的“一键三线表”。
+4. 表格会自动调整为三线表格式。
+
+需要自定义格式时，打开“三线表设置”，可以调整线宽、字体、字号、颜色，并保存为自己的模板。保存后的模板可以一键套用到新的表格。
+
+## 功能
 
 - 表格按窗口宽度自动调整。
 - 表格、行、单元格底纹统一清为空白。
@@ -12,121 +48,61 @@
 - 恢复整体表格上框线和下框线，默认 `0.75 pt` 黑色单线。
 - 恢复第一行下框线，默认 `0.5 pt` 黑色单线。
 - 可设置字体、字号、字体颜色和首行是否加粗。
-- 可保存多个模板；点击模板会立即按模板应用到选中表格。
-- 功能区按钮支持直接使用当前模板一键应用。
+- 可保存多个模板。
+- 点击模板即可直接套用到当前选中的表格。
 
-## 本地运行
+## 常见问题
 
-先生成图标：
+### Word 中没有看到插件
 
-```bash
-npm run icons
-```
+请完全退出 Microsoft Word，然后重新打开。如果仍然没有看到，请再次打开 DMG，双击 `一键三线表插件安装器.app`。
 
-浏览器预览任务窗格：
+### 插件页面打不开
+
+请确认电脑可以访问：
+
+[https://soulfree19.github.io/three-line-table-word/](https://soulfree19.github.io/three-line-table-word/)
+
+### 表格没有变化
+
+请确认已经选中表格，或者光标已经放在表格内部。旧版兼容模式文档建议先另存为 `.docx` 后再使用。
+
+### 这个插件会上传我的文档吗
+
+不会。插件代码在 Word 中运行，用来修改当前文档里的表格格式；项目没有后台服务器，也不需要用户登录账号。
+
+## 开发者说明
+
+本项目是 Office.js Word 加载项。普通用户不需要安装 Node，也不需要运行本地服务；下面内容仅用于开发和维护。
+
+本地预览任务窗格：
 
 ```bash
 npm run start
 ```
 
-打开：
-
-```text
-http://localhost:3000/taskpane.html
-```
-
-## Word for Mac 侧载
-
-Office 加载项开发建议使用 HTTPS。本项目不依赖 npm 包，使用本地自签名证书。
-
-### Mac 快速方式
-
-首次安装或更新插件清单：
-
-```bash
-./install-mac.command
-```
-
-日常使用前启动本地 HTTPS 服务：
-
-```bash
-./start-mac.command
-```
-
-也可以直接在 Finder 里双击这两个 `.command` 文件。`start-mac.command` 对应的终端窗口需要保持打开，Word 才能加载插件页面。
-
-### 手动方式
-
-1. 生成证书。
+Mac 本地 HTTPS 侧载调试：
 
 ```bash
 npm run cert
-```
-
-2. 在“钥匙串访问”中信任 `certs/localhost.crt`。
-
-3. 启动 HTTPS 服务。
-
-```bash
 npm run start:https
-```
-
-4. 复制 `manifest.xml` 到 Word 的侧载目录。若 `wef` 文件夹不存在，请创建它。
-
-```text
-/Users/<你的用户名>/Library/Containers/com.microsoft.Word/Data/Documents/wef
-```
-
-也可以运行：
-
-```bash
 npm run install:mac
 ```
 
-5. 重启 Word，打开任意文档，在“开始 > 加载项”中选择“一键三线表插件”。
-
-## 使用方式
-
-1. 在 Word 文稿中选中整个表格，或把光标放在表格内。
-2. 点击“开始”选项卡里的“一键三线表”。
-3. 如需改线宽、字体或颜色，打开“三线表设置”。
-4. 设置好后输入模板名称并保存；之后点击模板即可直接套用。
-
-## 发布打包
-
-生成 Mac 本地发布包：
-
-```bash
-npm run release:mac
-```
-
-生成的文件位于 `dist/`：
-
-```text
-three-line-table-word-1.0.0-mac-local.zip
-three-line-table-word-1.0.0-mac-local.sha256
-```
-
-更多说明见 `docs/MAC_INSTALL.md` 和 `docs/PACKAGING.md`。
-
-## GitHub DMG 分发
-
-面向普通用户分发时，可以使用 GitHub Pages 托管插件网页，并在 GitHub Releases 提供 DMG：
-
-```bash
-PUBLIC_BASE_URL=https://你的GitHub用户名.github.io/你的仓库名 npm run release:github
-```
-
-DMG 发布流程见 `docs/GITHUB_RELEASE.md`。
-
-## 开发检查
+代码检查：
 
 ```bash
 npm run check
 ```
 
-## 参考依据
+生成 GitHub Pages 和 DMG 发布包：
 
-- Microsoft Learn: Word add-ins use Office.js and support Word on Mac.
-- Microsoft Learn: Mac testing can sideload an add-in-only `manifest.xml`.
-- Microsoft Learn: Word table APIs include `autoFitWindow()`, `shadingColor`, `getBorder()` and row/cell formatting.
+```bash
+PUBLIC_BASE_URL=https://soulfree19.github.io/three-line-table-word npm run release:github
+```
+
+更多发布说明见：
+
+- [Mac 安装与使用](docs/MAC_INSTALL.md)
+- [GitHub DMG 发布](docs/GITHUB_RELEASE.md)
+- [打包说明](docs/PACKAGING.md)
