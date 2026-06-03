@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>一键三线表插件</title>
+    <link rel="stylesheet" href="src/taskpane.css">
+    <script src="https://appsforoffice.microsoft.com/lib/1/hosted/office.js"></script>
+  </head>
+  <body>
+    <main class="shell">
+      <section class="title-block">
+        <div class="mark" aria-hidden="true">
+          <span></span>
+          <span></span>
+          <span></span>
+        </div>
+        <div>
+          <h1>一键三线表插件</h1>
+          <p>选中 Word 表格后应用当前设置。</p>
+        </div>
+      </section>
+
+      <section class="action-panel">
+        <button class="primary-action" id="applyCurrent" type="button">应用当前设置</button>
+        <p class="status" id="status" role="status">正在准备加载项...</p>
+      </section>
+
+      <form class="settings" id="settingsForm">
+        <fieldset>
+          <legend>框线</legend>
+          <label>
+            <span>整体上/下框线</span>
+            <input id="outerWidth" name="outerWidth" type="number" min="0.25" max="6" step="0.25" value="0.75">
+          </label>
+          <label>
+            <span>首行下框线</span>
+            <input id="headerWidth" name="headerWidth" type="number" min="0.25" max="6" step="0.25" value="0.5">
+          </label>
+          <label>
+            <span>框线颜色</span>
+            <input id="borderColor" name="borderColor" type="color" value="#000000">
+          </label>
+        </fieldset>
+
+        <fieldset>
+          <legend>字体</legend>
+          <label>
+            <span>字体</span>
+            <input id="fontFamily" name="fontFamily" list="fontOptions" value="Times New Roman">
+          </label>
+          <datalist id="fontOptions">
+            <option value="Times New Roman"></option>
+            <option value="Songti SC"></option>
+            <option value="STSong"></option>
+            <option value="SimSun"></option>
+            <option value="Helvetica"></option>
+            <option value="Arial"></option>
+            <option value="Cambria"></option>
+            <option value="Calibri"></option>
+          </datalist>
+          <label>
+            <span>字号</span>
+            <input id="fontSize" name="fontSize" type="number" min="6" max="36" step="0.5" value="10.5">
+          </label>
+          <label>
+            <span>字体颜色</span>
+            <input id="fontColor" name="fontColor" type="color" value="#000000">
+          </label>
+          <label class="check-row">
+            <input id="headerBold" name="headerBold" type="checkbox">
+            <span>首行加粗</span>
+          </label>
+        </fieldset>
+      </form>
+
+      <section class="template-panel">
+        <div class="section-heading">
+          <h2>模板</h2>
+          <button id="resetDefaults" class="ghost-button" type="button">恢复默认</button>
+        </div>
+        <div class="save-row">
+          <input id="templateName" type="text" placeholder="模板名称">
+          <button id="saveTemplate" type="button">保存</button>
+        </div>
+        <div id="templateList" class="template-list"></div>
+      </section>
+    </main>
+
+    <script src="src/formatter.js"></script>
+    <script src="src/taskpane.js"></script>
+  </body>
+</html>

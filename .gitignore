@@ -1,0 +1,9 @@
+node_modules/
+certs/
+dist/
+_disabled-word-manifest/
+test_three_line_table.docx
+*.zip
+.DS_Store
+npm-debug.log*
+~$*

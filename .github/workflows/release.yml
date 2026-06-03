@@ -1,0 +1,31 @@
+name: Build DMG Release
+
+on:
+  push:
+    tags:
+      - "v*"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  dmg:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Build GitHub DMG
+        env:
+          PUBLIC_BASE_URL: ${{ vars.PUBLIC_BASE_URL || format('https://{0}.github.io/{1}', github.repository_owner, github.event.repository.name) }}
+        run: npm run release:github
+      - name: Publish GitHub Release assets
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG_NAME: ${{ github.ref_name }}
+        run: |
+          gh release view "$TAG_NAME" >/dev/null 2>&1 || \
+            gh release create "$TAG_NAME" --title "一键三线表插件 ${TAG_NAME}" --notes-file RELEASE_NOTES.md
+          gh release upload "$TAG_NAME" dist/*-github.dmg dist/*-github.dmg.sha256 dist/manifest.github.xml --clobber

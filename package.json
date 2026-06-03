@@ -1,0 +1,18 @@
+{
+  "name": "word-three-line-table-addin",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Word for Mac Office.js add-in for formatting selected tables as academic three-line tables.",
+  "type": "module",
+  "scripts": {
+    "start": "node scripts/dev-server.mjs --http",
+    "start:https": "node scripts/dev-server.mjs --https",
+    "install:mac": "bash scripts/install-manifest-mac.sh",
+    "cert": "bash scripts/create-local-cert.sh",
+    "icons": "node scripts/generate-icons.mjs",
+    "check": "node --check src/formatter.js && node --check src/taskpane.js && node --check src/commands.js && node --check scripts/dev-server.mjs && node --check scripts/generate-icons.mjs && node --check scripts/build-release.mjs && node --check scripts/build-github-release.mjs && bash -n scripts/create-local-cert.sh && bash -n scripts/install-manifest-mac.sh && bash -n install-mac.command && bash -n start-mac.command",
+    "release:mac": "npm run check && node scripts/build-release.mjs",
+    "build:pages": "node scripts/build-github-release.mjs --web-only",
+    "release:github": "npm run check && node scripts/build-github-release.mjs"
+  }
+}
