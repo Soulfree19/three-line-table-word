@@ -248,6 +248,14 @@
     return getWChildren(parent, localName)[0] || null;
   }
 
+  function removeWChildren(parent, localName) {
+    getWChildren(parent, localName).forEach((node) => node.remove());
+  }
+
+  function removeWDescendants(parent, localName) {
+    Array.from(parent.getElementsByTagNameNS(WORD_NS, localName)).forEach((node) => node.remove());
+  }
+
   function createWElement(doc, localName) {
     return doc.createElementNS(WORD_NS, wAttr(localName));
   }
@@ -275,11 +283,17 @@
     return ensureWChild(cell, "tcPr", true);
   }
 
-  function setWhiteShading(properties) {
-    const shading = ensureWChild(properties, "shd", false);
-    setWAttr(shading, "val", "clear");
-    setWAttr(shading, "color", "auto");
-    setWAttr(shading, "fill", "FFFFFF");
+  function clearTableStyleEffects(table, tableProperties) {
+    removeWChildren(tableProperties, "tblStyle");
+    removeWChildren(tableProperties, "tblStyleRowBandSize");
+    removeWChildren(tableProperties, "tblStyleColBandSize");
+    removeWChildren(tableProperties, "tblLook");
+    removeWDescendants(table, "cnfStyle");
+  }
+
+  function clearTableShading(table, tableProperties) {
+    clearTableStyleEffects(table, tableProperties);
+    removeWDescendants(table, "shd");
   }
 
   function setTableAutofit(tableProperties) {
@@ -356,14 +370,14 @@
 
   function formatOoxmlTable(doc, table, settings) {
     const tableProperties = ensureTableProperties(table);
+    clearTableShading(table, tableProperties);
     setTableAutofit(tableProperties);
-    setWhiteShading(tableProperties);
     setTableBorders(tableProperties, settings);
 
     const rows = getWChildren(table, "tr");
     rows.forEach((row, rowIndex) => {
       getWChildren(row, "tc").forEach((cell) => {
-        setWhiteShading(ensureCellProperties(cell));
+        ensureCellProperties(cell);
       });
 
       Array.from(row.getElementsByTagNameNS(WORD_NS, "r")).forEach((run) => {
