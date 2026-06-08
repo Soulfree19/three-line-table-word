@@ -96,12 +96,6 @@ npm run install:mac
 npm run check
 ```
 
-生成 GitHub Pages 和 DMG 发布包：
-
-```bash
-PUBLIC_BASE_URL=https://soulfree19.github.io/three-line-table-word npm run release:github
-```
-
 更多说明见：
 
 - [Mac 安装与使用](docs/MAC_INSTALL.md)
