@@ -296,6 +296,19 @@
     removeWDescendants(table, "shd");
   }
 
+  function setNoShading(properties) {
+    const shading = ensureWChild(properties, "shd", false);
+    setWAttr(shading, "val", "clear");
+    setWAttr(shading, "color", "auto");
+    setWAttr(shading, "fill", "auto");
+  }
+
+  function clearDirectBorders(table) {
+    removeWDescendants(table, "tblBorders");
+    removeWDescendants(table, "tcBorders");
+    removeWDescendants(table, "pBdr");
+  }
+
   function setTableAutofit(tableProperties) {
     const width = ensureWChild(tableProperties, "tblW", false);
     setWAttr(width, "type", "pct");
@@ -344,6 +357,8 @@
 
   function setRunFormatting(run, settings, isHeaderRun) {
     const runProperties = ensureWChild(run, "rPr", true);
+    setNoShading(runProperties);
+
     const fonts = ensureWChild(runProperties, "rFonts", false);
     setWAttr(fonts, "ascii", settings.fontFamily);
     setWAttr(fonts, "hAnsi", settings.fontFamily);
@@ -371,13 +386,18 @@
   function formatOoxmlTable(doc, table, settings) {
     const tableProperties = ensureTableProperties(table);
     clearTableShading(table, tableProperties);
+    clearDirectBorders(table);
+    setNoShading(tableProperties);
     setTableAutofit(tableProperties);
     setTableBorders(tableProperties, settings);
 
     const rows = getWChildren(table, "tr");
     rows.forEach((row, rowIndex) => {
       getWChildren(row, "tc").forEach((cell) => {
-        ensureCellProperties(cell);
+        setNoShading(ensureCellProperties(cell));
+        Array.from(cell.getElementsByTagNameNS(WORD_NS, "p")).forEach((paragraph) => {
+          setNoShading(ensureWChild(paragraph, "pPr", true));
+        });
       });
 
       Array.from(row.getElementsByTagNameNS(WORD_NS, "r")).forEach((run) => {
