@@ -37,15 +37,15 @@ git push -u origin main
 ## 3. 创建 Release DMG
 
 ```bash
-git tag v1.0.0
-git push origin v1.0.0
+git tag v1.1.0
+git push origin v1.1.0
 ```
 
 推送标签后，`Build DMG Release` 工作流会生成并上传：
 
 ```text
-three-line-table-word-1.0.0-github.dmg
-three-line-table-word-1.0.0-github.dmg.sha256
+three-line-table-word-1.1.0-github.dmg
+three-line-table-word-1.1.0-github.dmg.sha256
 manifest.github.xml
 ```
 
@@ -60,8 +60,8 @@ PUBLIC_BASE_URL=https://你的GitHub用户名.github.io/你的仓库名 npm run 
 生成结果：
 
 ```text
-dist/three-line-table-word-1.0.0-github.dmg
-dist/three-line-table-word-1.0.0-github.dmg.sha256
+dist/three-line-table-word-1.1.0-github.dmg
+dist/three-line-table-word-1.1.0-github.dmg.sha256
 dist/manifest.github.xml
 dist/github-pages/
 ```

@@ -2,13 +2,13 @@
 
 一键三线表插件是一个面向 Microsoft Word 的表格格式化工具，优先服务 Mac 用户。用户只需要在 Word 文稿中选中表格，或者把光标放进表格里，点击插件按钮，就可以把普通表格转换为科研论文常用的三线表。
 
-当前版本：`1.0.0`
+当前版本：`1.1.0`
 
 ## 下载
 
 推荐 Mac 用户下载 DMG 安装包：
 
-[下载一键三线表插件 v1.0.0 DMG](https://github.com/Soulfree19/three-line-table-word/releases/download/v1.0.0/three-line-table-word-1.0.0-github.dmg)
+[下载一键三线表插件 v1.1.0 DMG](https://github.com/Soulfree19/three-line-table-word/releases/download/v1.1.0/three-line-table-word-1.1.0-github.dmg)
 
 也可以进入 GitHub 发布页查看所有文件：
 
@@ -23,7 +23,7 @@
 
 ## 安装方法
 
-1. 下载 `three-line-table-word-1.0.0-github.dmg`。
+1. 下载 `three-line-table-word-1.1.0-github.dmg`。
 2. 打开 DMG 文件。
 3. 双击 `一键三线表插件安装器.app`。
 4. 安装完成后，完全退出并重新打开 Microsoft Word。

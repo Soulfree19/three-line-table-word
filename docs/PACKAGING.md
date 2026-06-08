@@ -9,8 +9,8 @@ npm run release:mac
 生成结果：
 
 ```text
-dist/three-line-table-word-1.0.0-mac-local.zip
-dist/three-line-table-word-1.0.0-mac-local.sha256
+dist/three-line-table-word-1.1.0-mac-local.zip
+dist/three-line-table-word-1.1.0-mac-local.sha256
 ```
 
 发布包会包含运行所需的 HTML、CSS、JavaScript、图标、清单、Mac 安装脚本和用户文档；不会包含测试文档、证书私钥、Word 临时锁文件或开发生成的 `dist` 内容。

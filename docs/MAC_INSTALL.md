@@ -10,11 +10,11 @@
 
 当前版本的直接下载地址：
 
-[three-line-table-word-1.0.0-github.dmg](https://github.com/Soulfree19/three-line-table-word/releases/download/v1.0.0/three-line-table-word-1.0.0-github.dmg)
+[three-line-table-word-1.1.0-github.dmg](https://github.com/Soulfree19/three-line-table-word/releases/download/v1.1.0/three-line-table-word-1.1.0-github.dmg)
 
 ## 首次安装
 
-1. 下载并打开 `three-line-table-word-1.0.0-github.dmg`。
+1. 下载并打开 `three-line-table-word-1.1.0-github.dmg`。
 2. 双击 `一键三线表插件安装器.app`。
 3. 看到安装完成提示后，完全退出 Microsoft Word。
 4. 重新打开 Microsoft Word。
