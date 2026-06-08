@@ -10,12 +10,48 @@
     outerWidth: 0.75,
     headerWidth: 0.5,
     borderColor: "#000000",
+    chineseFontFamily: "Songti SC",
+    westernFontFamily: "Times New Roman",
     fontFamily: "Times New Roman",
     fontSize: 10.5,
     fontColor: "#000000",
     headerBold: false
   });
   const BORDER_WIDTHS = Object.freeze([0.25, 0.5, 0.75, 1, 1.5, 2.25, 3, 4.5, 6]);
+  const FALLBACK_CHINESE_FONTS = Object.freeze([
+    "Songti SC",
+    "STSong",
+    "PingFang SC",
+    "Hiragino Sans GB",
+    "Heiti SC",
+    "Kaiti SC",
+    "STKaiti",
+    "STHeiti",
+    "STFangsong",
+    "Microsoft YaHei",
+    "SimSun",
+    "SimHei",
+    "KaiTi",
+    "FangSong",
+    "Noto Serif CJK SC",
+    "Noto Sans CJK SC",
+    "Source Han Serif SC",
+    "Source Han Sans SC"
+  ]);
+  const FALLBACK_WESTERN_FONTS = Object.freeze([
+    "Times New Roman",
+    "Arial",
+    "Helvetica",
+    "Calibri",
+    "Cambria",
+    "Aptos",
+    "Georgia",
+    "Garamond",
+    "Palatino",
+    "Verdana",
+    "Trebuchet MS",
+    "Courier New"
+  ]);
 
   function storageAvailable() {
     try {
@@ -75,23 +111,76 @@
     return fallback;
   }
 
-  function normalizeFontFamily(value) {
+  function normalizeFontFamily(value, fallback) {
     if (typeof value !== "string") {
-      return DEFAULT_SETTINGS.fontFamily;
+      return fallback || DEFAULT_SETTINGS.westernFontFamily;
     }
 
     const trimmed = value.trim();
-    return trimmed || DEFAULT_SETTINGS.fontFamily;
+    return trimmed || fallback || DEFAULT_SETTINGS.westernFontFamily;
+  }
+
+  function isLikelyChineseFontName(value) {
+    const name = String(value || "");
+    return /[\u3400-\u9fff]/.test(name) || /(?:CJK|Chinese|SC|TC|HK|CN|Song|Heiti|Kaiti|Kai|FangSong|SimSun|SimHei|YaHei|PingFang|Hiragino|Noto Serif CJK|Noto Sans CJK|Source Han|STSong|STHeiti|STKaiti|STFangsong)/i.test(name);
+  }
+
+  function normalizeFontList(fonts) {
+    const seen = new Set();
+    return (Array.isArray(fonts) ? fonts : [])
+      .map((font) => String(font || "").trim())
+      .filter(Boolean)
+      .filter((font) => {
+        const key = font.toLocaleLowerCase();
+        if (seen.has(key)) {
+          return false;
+        }
+        seen.add(key);
+        return true;
+      })
+      .sort((left, right) => left.localeCompare(right, "zh-Hans-CN", { sensitivity: "base" }));
+  }
+
+  function mergeFontLists(...lists) {
+    return normalizeFontList(lists.flat());
+  }
+
+  function splitFontNames(fontNames) {
+    const all = mergeFontLists(fontNames, FALLBACK_CHINESE_FONTS, FALLBACK_WESTERN_FONTS);
+    const chinese = all.filter(isLikelyChineseFontName);
+    const western = all.filter((font) => !isLikelyChineseFontName(font));
+
+    return {
+      all,
+      chinese: mergeFontLists(chinese, FALLBACK_CHINESE_FONTS, all),
+      western: mergeFontLists(western, FALLBACK_WESTERN_FONTS, all)
+    };
+  }
+
+  function getFallbackFontLists() {
+    return splitFontNames([]);
   }
 
   function normalizeSettings(input) {
     const source = input && typeof input === "object" ? input : {};
+    const legacyFont = normalizeFontFamily(source.fontFamily, "");
+    const legacyLooksChinese = isLikelyChineseFontName(legacyFont);
+    const chineseFontFamily = normalizeFontFamily(
+      source.chineseFontFamily || (legacyLooksChinese ? legacyFont : ""),
+      DEFAULT_SETTINGS.chineseFontFamily
+    );
+    const westernFontFamily = normalizeFontFamily(
+      source.westernFontFamily || (!legacyLooksChinese ? legacyFont : ""),
+      DEFAULT_SETTINGS.westernFontFamily
+    );
 
     return {
       outerWidth: snapBorderWidth(source.outerWidth, DEFAULT_SETTINGS.outerWidth),
       headerWidth: snapBorderWidth(source.headerWidth, DEFAULT_SETTINGS.headerWidth),
       borderColor: normalizeColor(source.borderColor, DEFAULT_SETTINGS.borderColor),
-      fontFamily: normalizeFontFamily(source.fontFamily),
+      chineseFontFamily,
+      westernFontFamily,
+      fontFamily: westernFontFamily,
       fontSize: clampNumber(source.fontSize, DEFAULT_SETTINGS.fontSize, 6, 36),
       fontColor: normalizeColor(source.fontColor, DEFAULT_SETTINGS.fontColor),
       headerBold: Boolean(source.headerBold)
@@ -215,6 +304,53 @@
     const requirements = global.Office.context && global.Office.context.requirements;
     if (requirements && !requirements.isSetSupported("WordApi", "1.3")) {
       throw new Error("当前 Word 版本不支持 WordApi 1.3，无法稳定修改表格框线。");
+    }
+  }
+
+  function supportsWordDesktopFontNames() {
+    try {
+      const requirements = global.Office && global.Office.context && global.Office.context.requirements;
+      return Boolean(requirements && requirements.isSetSupported("WordApiDesktop", "1.4"));
+    } catch (_error) {
+      return false;
+    }
+  }
+
+  async function loadAvailableFonts() {
+    if (!global.Word || !global.Office || !supportsWordDesktopFontNames()) {
+      return {
+        source: "fallback",
+        ...getFallbackFontLists()
+      };
+    }
+
+    try {
+      let fontNames = [];
+
+      await global.Word.run(async (context) => {
+        const collection = context.application.fontNames;
+        const countResult = collection.getCount();
+        await context.sync();
+
+        const count = Number(countResult.value) || 0;
+        const results = [];
+        for (let index = 0; index < count; index += 1) {
+          results.push(collection.getItemAt(index));
+        }
+
+        await context.sync();
+        fontNames = results.map((result) => result.value);
+      });
+
+      return {
+        source: "word",
+        ...splitFontNames(fontNames)
+      };
+    } catch (_error) {
+      return {
+        source: "fallback",
+        ...getFallbackFontLists()
+      };
     }
   }
 
@@ -360,10 +496,10 @@
     setNoShading(runProperties);
 
     const fonts = ensureWChild(runProperties, "rFonts", false);
-    setWAttr(fonts, "ascii", settings.fontFamily);
-    setWAttr(fonts, "hAnsi", settings.fontFamily);
-    setWAttr(fonts, "cs", settings.fontFamily);
-    setWAttr(fonts, "eastAsia", settings.fontFamily);
+    setWAttr(fonts, "ascii", settings.westernFontFamily);
+    setWAttr(fonts, "hAnsi", settings.westernFontFamily);
+    setWAttr(fonts, "cs", settings.westernFontFamily);
+    setWAttr(fonts, "eastAsia", settings.chineseFontFamily);
 
     const color = ensureWChild(runProperties, "color", false);
     setWAttr(color, "val", toWordColor(settings.fontColor));
@@ -503,6 +639,8 @@
     getActiveTemplateId,
     setActiveTemplateId,
     getActiveSettings,
+    loadAvailableFonts,
+    getFallbackFontLists,
     applyToSelection,
     getErrorMessage,
     resetSettings

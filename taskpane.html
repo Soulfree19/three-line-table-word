@@ -46,19 +46,31 @@
         <fieldset>
           <legend>字体</legend>
           <label>
-            <span>字体</span>
-            <input id="fontFamily" name="fontFamily" list="fontOptions" value="Times New Roman">
+            <span>中文字体</span>
+            <input id="chineseFontFamily" name="chineseFontFamily" list="chineseFontOptions" value="Songti SC">
           </label>
-          <datalist id="fontOptions">
-            <option value="Times New Roman"></option>
+          <datalist id="chineseFontOptions">
             <option value="Songti SC"></option>
             <option value="STSong"></option>
+            <option value="PingFang SC"></option>
+            <option value="Hiragino Sans GB"></option>
+            <option value="Heiti SC"></option>
+            <option value="Kaiti SC"></option>
+            <option value="Microsoft YaHei"></option>
             <option value="SimSun"></option>
+          </datalist>
+          <label>
+            <span>西文字体</span>
+            <input id="westernFontFamily" name="westernFontFamily" list="westernFontOptions" value="Times New Roman">
+          </label>
+          <datalist id="westernFontOptions">
+            <option value="Times New Roman"></option>
             <option value="Helvetica"></option>
             <option value="Arial"></option>
             <option value="Cambria"></option>
             <option value="Calibri"></option>
           </datalist>
+          <p class="field-hint" id="fontStatus">正在读取 Word 可用字体...</p>
           <label>
             <span>字号</span>
             <input id="fontSize" name="fontSize" type="number" min="6" max="36" step="0.5" value="10.5">

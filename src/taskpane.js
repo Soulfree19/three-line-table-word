@@ -9,6 +9,9 @@
   const saveTemplate = document.getElementById("saveTemplate");
   const templateList = document.getElementById("templateList");
   const resetDefaults = document.getElementById("resetDefaults");
+  const chineseFontOptions = document.getElementById("chineseFontOptions");
+  const westernFontOptions = document.getElementById("westernFontOptions");
+  const fontStatus = document.getElementById("fontStatus");
 
   let isApplying = false;
 
@@ -22,7 +25,8 @@
       outerWidth: form.elements.outerWidth.value,
       headerWidth: form.elements.headerWidth.value,
       borderColor: form.elements.borderColor.value,
-      fontFamily: form.elements.fontFamily.value,
+      chineseFontFamily: form.elements.chineseFontFamily.value,
+      westernFontFamily: form.elements.westernFontFamily.value,
       fontSize: form.elements.fontSize.value,
       fontColor: form.elements.fontColor.value,
       headerBold: form.elements.headerBold.checked
@@ -34,7 +38,8 @@
     form.elements.outerWidth.value = normalized.outerWidth;
     form.elements.headerWidth.value = normalized.headerWidth;
     form.elements.borderColor.value = normalized.borderColor;
-    form.elements.fontFamily.value = normalized.fontFamily;
+    form.elements.chineseFontFamily.value = normalized.chineseFontFamily;
+    form.elements.westernFontFamily.value = normalized.westernFontFamily;
     form.elements.fontSize.value = normalized.fontSize;
     form.elements.fontColor.value = normalized.fontColor;
     form.elements.headerBold.checked = normalized.headerBold;
@@ -87,9 +92,10 @@
       const summary = document.createElement("button");
       summary.type = "button";
       summary.className = "template-apply";
+      const fontSummary = summarizeFonts(template.settings);
       summary.innerHTML = `
         <strong>${escapeHtml(template.name)}</strong>
-        <span>${template.settings.outerWidth} pt / ${template.settings.headerWidth} pt · ${escapeHtml(template.settings.fontFamily)} ${template.settings.fontSize} pt</span>
+        <span>${template.settings.outerWidth} pt / ${template.settings.headerWidth} pt · ${escapeHtml(fontSummary)} ${template.settings.fontSize} pt</span>
       `;
       summary.addEventListener("click", () => {
         formatter.setActiveTemplateId(template.id);
@@ -122,6 +128,71 @@
       .replaceAll(">", "&gt;")
       .replaceAll('"', "&quot;")
       .replaceAll("'", "&#039;");
+  }
+
+  function summarizeFonts(settings) {
+    const normalized = formatter.normalizeSettings(settings);
+    if (normalized.chineseFontFamily === normalized.westernFontFamily) {
+      return normalized.chineseFontFamily;
+    }
+
+    return `${normalized.chineseFontFamily} / ${normalized.westernFontFamily}`;
+  }
+
+  function renderFontOptions(target, fonts, currentValue) {
+    const values = [];
+    const seen = new Set();
+
+    [currentValue, ...fonts].forEach((font) => {
+      const value = String(font || "").trim();
+      const key = value.toLocaleLowerCase();
+      if (!value || seen.has(key)) {
+        return;
+      }
+
+      seen.add(key);
+      values.push(value);
+    });
+
+    const fragment = document.createDocumentFragment();
+    values.forEach((value) => {
+      const option = document.createElement("option");
+      option.value = value;
+      fragment.append(option);
+    });
+
+    target.replaceChildren(fragment);
+  }
+
+  function renderFontLists(fontLists) {
+    const settings = getFormSettings();
+    renderFontOptions(chineseFontOptions, fontLists.chinese, settings.chineseFontFamily);
+    renderFontOptions(westernFontOptions, fontLists.western, settings.westernFontFamily);
+
+    if (fontLists.source === "word") {
+      fontStatus.textContent = `已读取 ${fontLists.all.length} 个 Word 可用字体。`;
+      fontStatus.dataset.tone = "success";
+    } else {
+      fontStatus.textContent = "当前环境不能自动读取字体；可从常用字体选择，也可直接输入本机字体名。";
+      fontStatus.dataset.tone = "neutral";
+    }
+  }
+
+  async function loadFonts() {
+    renderFontLists({
+      source: "fallback",
+      ...formatter.getFallbackFontLists()
+    });
+
+    if (!global.Word) {
+      return;
+    }
+
+    fontStatus.textContent = "正在读取 Word 可用字体...";
+    fontStatus.dataset.tone = "busy";
+
+    const fontLists = await formatter.loadAvailableFonts();
+    renderFontLists(fontLists);
   }
 
   function wireEvents() {
@@ -165,6 +236,7 @@
 
     booted = true;
     fillForm(formatter.getActiveSettings());
+    loadFonts();
     renderTemplates();
     wireEvents();
 

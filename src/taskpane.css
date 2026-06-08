@@ -77,7 +77,8 @@ h1 {
 
 .title-block p,
 .status,
-.empty-state {
+.empty-state,
+.field-hint {
   margin-top: 4px;
   color: var(--muted);
   font-size: 12px;
@@ -127,6 +128,18 @@ fieldset,
 }
 
 .status[data-tone="busy"] {
+  color: var(--blue);
+}
+
+.field-hint {
+  margin: -4px 0 0;
+}
+
+.field-hint[data-tone="success"] {
+  color: var(--accent-strong);
+}
+
+.field-hint[data-tone="busy"] {
   color: var(--blue);
 }
 
